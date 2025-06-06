@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+    id 'com.google.protobuf' version '0.9.5'
+    id("io.freefair.lombok") version "8.13.1"
+    id "org.gradle.test-retry"  version "1.6.2"
+}
+
+group = 'demo'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    implementation 'org.modelmapper:modelmapper:3.2.3'
+
+    implementation 'io.grpc:grpc-protobuf:1.73.0'
+}
+
+test {
+    useJUnitPlatform()
+
+    retry {
+        maxFailures = 20
+        maxRetries = 20
+    }
+
+    testLogging {
+        showStandardStreams = true
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.25.5"
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.73.0'
+        }
+    }
+    generateProtoTasks {
+        all()*.builtins {
+            java {}
+        }
+        all()*.plugins {
+            grpc {}
+        }
+    }
+}

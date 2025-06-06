@@ -1,0 +1,21 @@
+on: push
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            command: ./run_tests.sh
+          - os: windows-latest
+            command: ./run_tests.bat
+          - os: macos-latest
+            command: ./run_tests.sh
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Execute tests
+        run: ${{ matrix.command }}
